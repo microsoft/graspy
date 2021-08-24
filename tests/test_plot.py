@@ -12,6 +12,7 @@ from graspologic.plot.plot import (
     heatmap,
     pairplot,
     pairplot_with_gmm,
+    binary_heatmap,
 )
 from graspologic.simulations.simulations import er_np, sbm
 

@@ -1,6 +1,7 @@
 # Copyright (c) Microsoft Corporation and contributors.
 # Licensed under the MIT License.
 
+import warnings
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -262,18 +263,22 @@ def heatmap(
         if len(xticklabels) != X.shape[1]:
             msg = "xticklabels must have same length {}.".format(X.shape[1])
             raise ValueError(msg)
-    elif not isinstance(xticklabels, bool):
-        msg = "xticklabels must be a bool or a list, not {}".format(type(xticklabels))
+
+    elif not isinstance(xticklabels, (bool, int)):
+        msg = "xticklabels must be a bool, int, or a list, not {}".format(
+            type(xticklabels)
+        )
         raise TypeError(msg)
 
     if isinstance(yticklabels, list):
         if len(yticklabels) != X.shape[0]:
             msg = "yticklabels must have same length {}.".format(X.shape[0])
             raise ValueError(msg)
-    elif not isinstance(yticklabels, bool):
-        msg = "yticklabels must be a bool or a list, not {}".format(type(yticklabels))
+    elif not isinstance(yticklabels, (bool, int)):
+        msg = "yticklabels must be a bool, int, or a list, not {}".format(
+            type(yticklabels)
+        )
         raise TypeError(msg)
-
     # Handle cmap
     if not isinstance(cmap, (str, list, Colormap)):
         msg = "cmap must be a string, list of colors, or matplotlib.colors.Colormap,"
@@ -290,6 +295,11 @@ def heatmap(
     if not isinstance(cbar, bool):
         msg = "cbar must be a bool, not {}.".format(type(center))
         raise TypeError(msg)
+
+    # Warning on labels
+    if (inner_hier_labels is None) and (outer_hier_labels is not None):
+        msg = "outer_hier_labels requires inner_hier_labels to be used."
+        warnings.warn(msg)
 
     arr = import_graph(X)
 
@@ -1267,6 +1277,8 @@ def _unique_like(vals):
 # assume that the graph has already been plotted in sorted form
 def _plot_groups(ax, graph, inner_labels, outer_labels=None, fontsize=30):
     inner_labels = np.array(inner_labels)
+    if outer_labels is not None:
+        outer_labels = np.array(outer_labels)
     plot_outer = True
     if outer_labels is None:
         outer_labels = np.ones_like(inner_labels)
