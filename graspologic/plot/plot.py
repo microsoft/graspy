@@ -262,8 +262,10 @@ def heatmap(
         if len(xticklabels) != X.shape[1]:
             msg = "xticklabels must have same length {}.".format(X.shape[1])
             raise ValueError(msg)
-    elif not isinstance(xticklabels, bool):
-        msg = "xticklabels must be a bool or a list, not {}".format(type(xticklabels))
+    elif not isinstance(xticklabels, (bool, int)):
+        msg = "xticklabels must be a bool, list, or int, not {}".format(
+            type(xticklabels)
+        )
         raise TypeError(msg)
 
     if isinstance(yticklabels, list):
