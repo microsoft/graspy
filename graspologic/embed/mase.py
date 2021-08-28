@@ -2,12 +2,13 @@
 # Licensed under the MIT License.
 
 from typing import Optional
-
 import numpy as np
 
 from ..utils import is_almost_symmetric
 from .base import BaseEmbedMulti
 from .svd import select_dimension, select_svd
+
+from joblib import delayed, Parallel
 
 
 class MultipleASE(BaseEmbedMulti):
@@ -58,6 +59,13 @@ class MultipleASE(BaseEmbedMulti):
         Number of iterations for randomized SVD solver. Not used by 'full' or
         'truncated'. The default is larger than the default in randomized_svd
         to handle sparse matrices that may have large slowly decaying spectrum.
+
+    n_jobs: int, default: None
+        The maximum number of concurrently running jobs, such as the number of
+        Python worker processes when backend=”multiprocessing” or the size of
+        the thread-pool when backend=”threading”. If -1 all CPUs are used. If
+        1 is given, no parallel computing code is used at all, which is
+        useful for debugging.
 
     scaled : bool, optional (default=True)
         Whether to scale individual eigenvectors with eigenvalues in first embedding
@@ -118,7 +126,9 @@ class MultipleASE(BaseEmbedMulti):
         scaled=True,
         diag_aug=True,
         concat=False,
+        n_jobs=-1,
         svd_seed: Optional[int] = None,
+
     ):
         if not isinstance(scaled, bool):
             msg = "scaled must be a boolean, not {}".format(scaled)
@@ -134,6 +144,7 @@ class MultipleASE(BaseEmbedMulti):
             svd_seed=svd_seed,
         )
         self.scaled = scaled
+        self.n_jobs = n_jobs
 
     def _reduce_dim(self, graphs):
         if self.n_components is None:
@@ -143,8 +154,9 @@ class MultipleASE(BaseEmbedMulti):
             n_components = self.n_components
 
         # embed individual graphs
-        embeddings = [
-            select_svd(
+
+        embeddings = Parallel(n_jobs=self.n_jobs)(
+            delayed(selectSVD)(
                 graph,
                 n_components=n_components,
                 algorithm=self.algorithm,
@@ -152,7 +164,7 @@ class MultipleASE(BaseEmbedMulti):
                 svd_seed=self.svd_seed,
             )
             for graph in graphs
-        ]
+        )
         Us, Ds, Vs = zip(*embeddings)
 
         # Choose the best embedding dimension for each graphs
