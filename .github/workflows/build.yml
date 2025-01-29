@@ -2,20 +2,20 @@ name: graspologic Build
 on:
   push:
     paths-ignore:
-      - '.all-contributorsrc'
-      - 'CONTRIBUTORS.md'
+      - ".all-contributorsrc"
+      - "CONTRIBUTORS.md"
     branches-ignore:
-      - 'dev'
-      - 'main'
+      - "dev"
+      - "main"
   pull_request:
     paths-ignore:
-      - '.all-contributorsrc'
-      - 'CONTRIBUTORS.md'
+      - ".all-contributorsrc"
+      - "CONTRIBUTORS.md"
   workflow_call:
 
 env:
-  PYTHON_VERSION: '3.10'
-  POETRY_VERSION: '1.8.3'
+  PYTHON_VERSION: "3.10"
+  POETRY_VERSION: "1.8.3"
 
 jobs:
   build-reference-documentation:
@@ -87,7 +87,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python_version: ["3.9", "3.10", "3.11", "3.12"]
+        python_version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
