@@ -102,7 +102,7 @@ jobs:
       - name: Install dependencies
         run: |
           poetry self add setuptools wheel
-          poetry run python -m pip install llvmlite
+          poetry run python -m pip install llvmlite==0.43
           poetry install
       - name: Run Unit Tests and Doctests Python ${{matrix.python_version}} ${{matrix.os}}
         run: poetry run poe tests
