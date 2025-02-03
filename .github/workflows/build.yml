@@ -91,6 +91,8 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
+      - name: Install libopenblas-dev # https://github.com/scipy/scipy/issues/16308
+        run: sudo apt-get update && sudo apt-get install -y libopenblas-dev
       - name: Set up Python ${{matrix.python_version}} ${{matrix.os}}
         uses: actions/setup-python@v2
         with:
